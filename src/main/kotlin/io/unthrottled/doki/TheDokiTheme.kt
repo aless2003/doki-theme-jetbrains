@@ -1,12 +1,10 @@
 package io.unthrottled.doki
 
-import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.ide.ui.LafManagerListener
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationActivationListener
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
-import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.IdeFrame
 import io.unthrottled.doki.config.ThemeConfig
@@ -32,21 +30,15 @@ class TheDokiTheme : Disposable {
   private val connection = ApplicationManager.getApplication().messageBus.connect()
 
   companion object {
-    const val COMMUNITY_PLUGIN_ID = "io.acari.DDLCTheme"
-    private const val ULTIMATE_PLUGIN_ID = "io.unthrottled.DokiTheme"
-
     fun getInstance(): TheDokiTheme = ApplicationManager.getApplication().getService(TheDokiTheme::class.java)
 
     fun getVersion(): Optional<String> =
-      PluginManagerCore.getPlugin(PluginId.getId(COMMUNITY_PLUGIN_ID))
+      TheDokiTheme::class.java
+        .getResourceAsStream("/doki/plugin.version")
+        ?.bufferedReader()
+        ?.use { it.readText().trim() }
         .toOptional()
-        .map { it.toOptional() }
-        .orElseGet {
-          PluginManagerCore.getPlugin(
-            PluginId.getId(ULTIMATE_PLUGIN_ID),
-          ).toOptional()
-        }
-        .map { it.version }
+        .filter { it.isNotEmpty() }
   }
 
 

@@ -114,6 +114,14 @@ tasks {
     gradleVersion = providers.gradleProperty("gradleVersion").get()
   }
 
+  processResources {
+    // Local value keeps the copy spec free of Gradle script references, which the configuration cache rejects.
+    val stampedPluginVersion = providers.gradleProperty("pluginVersion").get()
+    filesMatching("doki/plugin.version") {
+      expand("pluginVersion" to stampedPluginVersion)
+    }
+  }
+
   patchPluginXml {
     dependsOn("buildThemes")
   }
